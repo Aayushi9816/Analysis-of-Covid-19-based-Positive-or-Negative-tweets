@@ -1,0 +1,115 @@
+<center><h1><b>APPENDIX A</b></h1></center>
+<h1><span style='color:Blue'>The code for analysis of Covid-19 based Positive or Negative tweets.</span><h1>
+    <h2>  Installing gensim to process raw and unstructured digital texts.
+
+pip install gensim 
+
+<h2> Importing all of the necessary packages for the analysis <h2>
+
+import nltk
+import re
+import gensim
+import csv
+import re
+import nltk
+import nltk.tokenize
+import pandas as pd
+nltk.download('punkt', quiet=True)
+
+<h3>Loading the .csv file <h3>
+
+
+with open('finalSentimentdata2.csv',encoding="utf-8") as text:
+    lines = text.readlines()
+
+print(lines[:10])
+
+for l in lines[:5]:
+    print (l)
+
+<h4>Function to recognize punctuations <h4>
+
+PUNCT_RE = re.compile(r'[^\w\s]+$')
+def is_punct(string):
+    return PUNCT_RE.match(string) is not None
+
+<h3>Coverting text to lowercase and tokenization of data<h3>
+
+import nltk
+import nltk.tokenize
+nltk.download('punkt', quiet=True)
+
+for l in lines[:5]:
+    tokens = nltk.tokenize.word_tokenize(l)
+    tokens_processed = [token for token in tokens if not is_punct(token)]
+    tokens_processed = [w.lower() for w in  tokens_processed]
+    print(tokens_processed)
+    
+
+<h3>Removing punctuation from each word and removing remaining tokens that are not alphabetic<h3>
+
+import nltk
+import nltk.tokenize
+import string
+nltk.download('punkt', quiet=True)
+table = str.maketrans('', '', string.punctuation)
+stripped = [w.translate(table) for w in tokens]
+
+for l in lines[:5]:
+    tokens = nltk.tokenize.word_tokenize(l)
+    tokens_processed = [token for token in tokens if not is_punct(token)]
+    tokens_processed = [w.lower() for w in  tokens_processed]
+    words = [word for word in stripped if word.isalpha()]
+    print(tokens_processed)
+
+data = []
+for l in lines[:5]:
+    tokens = nltk.tokenize.word_tokenize(l)
+    tokens_processed = [token for token in tokens if not is_punct(token)]
+    print(tokens_processed)
+    data.append(tokens_processed)
+    
+print(data)
+
+<h2> Importing Word2Vec Model<h2>
+
+model = gensim.models.Word2Vec(data, min_count=1)
+model.save('sample_model.bin')
+sample_model = gensim.models.Word2Vec.load('sample_model.bin')
+
+<h3>Finding most similar words using Word2Vec<h3>
+
+sample_model.wv.most_similar("fun")
+
+sample_model.wv.most_similar("terrible")
+
+<h3> Creating a review model to analyse the data using TensorFlow Projections<h3>
+
+review_model = gensim.models.Word2Vec(data, min_count=1)
+
+review_model.wv.most_similar('fear')
+
+review_model.wv['fear']
+
+<h4> Checking similarity in words<h4>
+
+fear = ['ridiculous', 'death', 'fuck', 'poor','ass', 'scaring', 'lockdown', 'covid', 'shit','dangerous','hazardous','coronavirus','covid']
+
+
+for d in fear:
+    print( d, review_model.wv.similarity('fear', d))
+
+
+good = ['safe', 'heart', 'soul', 'joy','fun', 'trip', 'care', 'life']
+
+
+for d in good:
+    print( d, review_model.wv.similarity('good', d))
+
+<h3> Converting the file to .bin and using it to export Metadata and Tensor data <h3>
+
+review_model2 = gensim.models.Word2Vec(data, min_count=1)
+
+review_model2.wv.save_word2vec_format('review_model2.bin')
+
+<p> The code for exporting the metadata and tensor data for projections: python -m gensim.scripts.word2vec2tensor -i C:\Users\Lenovo\Documents\AI3\review_model2.bin -o C:\Users\Lenovo\Documents\AI3\ <p>
